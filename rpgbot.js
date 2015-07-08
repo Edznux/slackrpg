@@ -14,7 +14,6 @@ module.exports = function (req, res, next) {
 	}
 
 	db.getUserByName(userName,function(exist){
-		console.log('User By Name');
 
 		if(!exist){
 			db.createUser(userName,"citizen",0,function(result){
