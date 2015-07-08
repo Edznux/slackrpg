@@ -21,7 +21,7 @@ module.exports = function(req,res,games,cmd){
 			var arg3 = cmd.split(' ')[3];
 			var arg4 = cmd.split(' ')[4];
 
-			var userRes = req.body.text.substr(19);
+			var userRes = req.body.text.substr(19).toLowerCase().trim();
 			
 			console.log(cmd);
 			console.log("quizz arg1",arg1);
@@ -37,7 +37,10 @@ module.exports = function(req,res,games,cmd){
 
 				case "res":
 					console.log(currentQuestion);
-					if(userRes == this.getRes(currentQuestion)){
+					console.log(this.getRes(currentQuestion));
+					console.log(userRes);
+
+					if(this.getRes(currentQuestion).indexOf(userRes) >= 0){
 						res.status(200).json({text:"GGWP bonne reponse "+bot.getUser(req)});
 					}else{
 						res.status(200).json({text:"Mauvais réponse "+bot.getUser(req)});
@@ -57,7 +60,12 @@ module.exports = function(req,res,games,cmd){
 			}
 		},
 		getQuizz: function(req,res){
-			return [{"id":1,"question":"Quel est le chiffre blah ..?", "response":"42"},{"id":2,"question":"Mon auteur est ?", "response":"Edouard"}];
+			return [
+				{"id":1,"question":"Quel est le chiffre blah ..?", "response":["42"]},
+				{"id":2,"question":"Mon auteur est ?", "response":["edouard"]},
+				{"id":1,"question":"Quel est la valeur max d'un integer (32 bit)?", "response":['4294967295','4 294 967 295']},
+
+			];
 		},
 		getRnd : function(req,res){
 			var nbq = this.getQuizz().length;
@@ -72,7 +80,7 @@ module.exports = function(req,res,games,cmd){
 			var rules = [
 					"Règles du jeux",
 					"Une fois le quizz lancer avec [rpg game quizz create]",
-					"les participant reponde dans le chat sous la forme [rpg game quizz res <réponse a la question]",
+					"les participant reponde dans le chat sous la forme [rpg game quizz res <réponse a la question>]",
 					"Le premier partipant ayant la bonne réponse remporte la partie",
 				].join('\n');
 			res.status(200).json({"text":rules});
