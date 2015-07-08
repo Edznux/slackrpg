@@ -1,0 +1,21 @@
+{
+  "name": "SlackRPG",
+  "version": "0.0.1",
+  "description": "Slack Economic and Role play bot",
+  "main": "app.js",
+  "dependencies": {
+    "express": "^4.x.x",
+    "body-parser": "^1.x.x"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "slack",
+    "economic",
+    "rpg"
+  ],
+  "author": "Edznux",
+  "license": "MIT"
+}
