@@ -18,14 +18,15 @@ create one file in /games folder
     
     module.exports = function(req,res,games,cmd){
         
-        games.rnd = function(){};
+        games.mag = function(){};
+        
         for(var i=0;i<games.list.length;i++){
             if(games.list[i].name !== name){
                 games.list.push({"gameName":gameName,"name":name,"file":file});
             }
         }
     
-        games.rnd = {
+        games.mag = {
             /**
             * custom route for your games
             */

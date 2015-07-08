@@ -91,6 +91,7 @@ function getHelp(req,res){
 				"Bienvenue dans " + gameName,
 				"rpg game "+ name + " create <gold>: Crée une nouvelle partie avec <gold> au depart",
 				"rpg game "+ name + " join : Rejoindre la partie en cours",
+				"rpg game "+ name + " gen : Generate",
 				"rpg game "+ name + " quit : Quitter la partie en cours",
 
 				].join('\n'); 
