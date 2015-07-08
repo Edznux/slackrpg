@@ -1,5 +1,5 @@
-SlackRPG
-##
+#SlackRPG#
+
 
 SlackRPG is a Slack bot with an financial system, games etc...
 
