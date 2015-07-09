@@ -50,12 +50,14 @@ module.exports = function(req,res,games,cmd){
 				case "help":
 					this.getHelp(req,res);
 				break;
+				
 				case "rules":
 					this.getRules(req,res);
 				break;
 
 				default:
-					console.log("default route");
+					this.getHelp(req,res);
+					console.log("default quizz route");
 				break;
 			}
 		},
