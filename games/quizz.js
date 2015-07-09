@@ -3,7 +3,7 @@ var gameName = "Quizz",
 	name = "quizz",
 	file = "quizz.js",
 
-	currentQuestion = 0,
+	currentQuestion = -1,
 	nbTry = 0,
 	nbTryMax = 10;
 
@@ -19,6 +19,7 @@ module.exports = function(req,res,games,cmd){
 	games.quizz = {
 		router:function(req,res){
 			var cmd = req.body.text.substr(4);
+			console.log("nbTry =",nbTry,"nbTryMax",nbTryMax,"currentQuestion",currentQuestion);
 
 			var arg1 = cmd.split(' ')[1];
 			var arg2 = cmd.split(' ')[2];
@@ -36,32 +37,36 @@ module.exports = function(req,res,games,cmd){
 			switch(arg2){
 				case "create":
 					console.log('rpg game quizz create');
+					console.log(currentQuestion);
 					if(currentQuestion == -1){
-						res.status(200).json({"text":"Une question est deja en cours ("+nbTry+"essais / "+nbTryMax+")"});
+						q = this.getRnd(req,res);
+						currentQuestion = q.id;
+						console.log('nouvelle question =',q.question);
+						res.status(200).json({'text':q.question});
 					}else{
-						res.status(200).json({'text':this.getRnd(req,res).question})
+						res.status(200).json({"text":"Une question est deja en cours ("+nbTry+"essais / "+nbTryMax+")"});
 					}
 				break;
 				
 				case "res":
-					console.log(currentQuestion);
-					console.log(this.getRes(currentQuestion));
-					console.log(userRes);
+					console.log("currentQuestion res",currentQuestion);
+					console.log(this);
+					console.log("getRes(",this.getRes(currentQuestion),") res ",this.getRes(currentQuestion));
 					
 					nbTry++;
 					if(nbTry == nbTryMax){
 						nbTry = 0;
 						currentQuestion = -1;
 					}
+
 					if(currentQuestion == -1){
 						res.status(200).json({"text":"Il n'y a pas de question en cours"});
-					}
-
-					if(this.getRes(currentQuestion).indexOf(userRes) >= 0){
-						currentQuestion = -1:
-						res.status(200).json({text:"GGWP bonne reponse "+bot.getUser(req)});
 					}else{
-						res.status(200).json({text:"Mauvais réponse "+bot.getUser(req)});
+						if(this.getRes(currentQuestion).indexOf(userRes) >= 0){
+							res.status(200).json({text:"GGWP bonne reponse "+bot.getUser(req)});
+						}else{
+							res.status(200).json({text:"Mauvais réponse "+bot.getUser(req)});
+						}
 					}
 				break;
 
