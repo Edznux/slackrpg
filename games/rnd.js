@@ -62,9 +62,12 @@ module.exports = function(req,res,games,cmd){
 				case "rules":
 					this.getRules(req,res);
 				break;
-
+				case "":
+					this.getHelp(req,res);
+				break;
 				default:
-					console.log("default route");
+					this.getHelp(req,res);
+					console.log("default quizz route");
 				break;
 			}
 		},
