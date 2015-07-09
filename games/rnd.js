@@ -1,5 +1,5 @@
 var bot = require("../lib/bot");
-var gameName = "Le jeux du Random",
+var gameName = "Le jeu du Random",
 	name = "rnd",
 	file = "rnd.js";
 
@@ -15,11 +15,11 @@ module.exports = function(req,res,games,cmd){
 	games.rnd = {
 
 		getName : function (){
-			return "Jeux du Random";
+			return "Jeu du Random";
 		},
 		getRnd : function(req,res){
 			res.status(200).json({
-				"text" : bot.getUser(req)+" à tiré : "+ Math.floor( Math.random()*100 +1)
+				"text" : bot.getUser(req)+" a tiré : "+ Math.floor( Math.random()*100 +1)
 			});
 		},
 		router : function(req,res){
@@ -45,7 +45,7 @@ module.exports = function(req,res,games,cmd){
 				case "create":
 					console.log('rpg game rnd create');
 					if(arg3){
-						console.log('CREATE THE GAME');
+						console.log('CREATED THE GAME');
 						createGame(req,res,bot.getUser(req),arg3);
 					}else{
 						this.getHelp(req,res);
@@ -73,36 +73,36 @@ module.exports = function(req,res,games,cmd){
 		},
 		getRules: function(req,res){
 				var rules = [
-						"Règles du jeux",
-						"Après avoir rejoind une partie [rpg game rnd join] et avant l'ecoulement du timer,",
+						"Règles du jeu",
+						"Après avoir rejoint une partie [rpg game rnd join] et avant l'écoulement du timer,",
 						"chaque participant doit tirer un nombre aléatoire compris entre 0 et 100 [tpg game rnd gen]",
 						"La personne ayant le plus petit nombre donne la mise a celui qui a le plus grand nombre.",
-						"Les autres personne du groupes ne sont donc pas concernée.",
-						"Certain de ces nombre ont neanmoins des propriété particuliere que voici :",
-						"1 : le propriétaire donne la mise a TOUS les participants",
-						"2 : Le tireur donne 1/100 de la mise a tout les participants",
-						"13 : Chiffre le plus petit, remplace la personne ayant le plus petit nombre, les tours suivant doivent etre misé double",
-						"99 : Tous les joueurs donne 1/100eme de la mise au tireur, les autres chiffre (autre que 1 et 100) sont annulé ",
-						"100 : TOUS les participants donne la mise au propriétaire",
-						"Egalité entre 2 membres : double la mise et re-tirage"
+						"Les autres personne du groupe ne sont donc pas concernées.",
+						"Certains de ces nombres ont des propriétés particulières que voici :",
+						"1 : le propriétaire donne la mise à TOUT les participants.",
+						"2 : Le tireur donne 1/100ème de la mise à tout les participants.",
+						"13 : Chiffre le plus petit, remplace la personne ayant le plus petit nombre, les tours suivants doivent être misés double.",
+						"99 : Tous les joueurs donnent 1/100ème de la mise au tireur, les autres chiffres (autre que 1 et 100) sont annulés.",
+						"100 : TOUT les participants donnent la mise au propriétaire.",
+						"Égalité entre 2 membres : double la mise et re-tirage."
 					].join('\n');
 			res.status(200).json({"text":rules});
 		},
 		getHelp : function(req,res){
 			var help = [
 						"Bienvenue dans " + gameName,
-						"rpg game "+ name + " create <gold>: Crée une nouvelle partie avec <gold> au depart",
-						"rpg game "+ name + " join : Rejoindre la partie en cours",
-						"rpg game "+ name + " gen : Generate",
-						"rpg game "+ name + " quit : Quitter la partie en cours",
+						"rpg game "+ name + " create <gold>: Crée une nouvelle partie avec <gold> au départ.",
+						"rpg game "+ name + " join : Rejoindre la partie en cours.",
+						"rpg game "+ name + " gen : Effectuer son propre tirage.",
+						"rpg game "+ name + " quit : Quitter la partie en cours.",
 
 						].join('\n'); 
 
 			res.status(200).json({"text":help});
 		}
-	}
+	};
 	return games;
-}
+};
 
 
 function joinGame(req,res,user_name){
@@ -110,7 +110,7 @@ function joinGame(req,res,user_name){
 }
 
 function createGame(req,res,user_name,gold){
-	res.status(200).json({"text":"["+gameName.toUpperCase()+"] "+user_name + " create the game. Starting with " + gold +" gold "})
+	res.status(200).json({"text":"["+gameName.toUpperCase()+"] "+user_name + " created the game. Starting with " + gold +" gold "});
 }
 
 function initTimer(req,res,duration,callback){
@@ -122,5 +122,5 @@ function initTimer(req,res,duration,callback){
 			callback();
 			// res.status(200).json({"text":"No time left!"});
 		}
-	},1000)
+	},1000);
 }
