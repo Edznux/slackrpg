@@ -34,7 +34,7 @@ module.exports = function(req,res,games,cmd){
 					console.log('rpg game quizz create');
 					res.status(200).json({'text':this.getRnd(req,res).question})
 				break;
-
+				
 				case "res":
 					console.log(currentQuestion);
 					console.log(this.getRes(currentQuestion));
