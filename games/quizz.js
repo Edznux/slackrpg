@@ -1,8 +1,12 @@
 var bot = require("../lib/bot");
 var gameName = "Quizz",
 	name = "quizz",
-	file = "quizz.js";
-var currentQuestion = 0;
+	file = "quizz.js",
+
+	currentQuestion = 0,
+	nbTry = 0,
+	nbTryMax = 10;
+
 module.exports = function(req,res,games,cmd){
 	
 	games.quizz = function(){};
@@ -32,15 +36,29 @@ module.exports = function(req,res,games,cmd){
 			switch(arg2){
 				case "create":
 					console.log('rpg game quizz create');
-					res.status(200).json({'text':this.getRnd(req,res).question})
+					if(currentQuestion == -1){
+						res.status(200).json({"text":"Une question est deja en cours ("+nbTry+"essais / "+nbTryMax+")"});
+					}else{
+						res.status(200).json({'text':this.getRnd(req,res).question})
+					}
 				break;
 				
 				case "res":
 					console.log(currentQuestion);
 					console.log(this.getRes(currentQuestion));
 					console.log(userRes);
+					
+					nbTry++;
+					if(nbTry == nbTryMax){
+						nbTry = 0;
+						currentQuestion = -1;
+					}
+					if(currentQuestion == -1){
+						res.status(200).json({"text":"Il n'y a pas de question en cours"});
+					}
 
 					if(this.getRes(currentQuestion).indexOf(userRes) >= 0){
+						currentQuestion = -1:
 						res.status(200).json({text:"GGWP bonne reponse "+bot.getUser(req)});
 					}else{
 						res.status(200).json({text:"Mauvais réponse "+bot.getUser(req)});
@@ -63,7 +81,7 @@ module.exports = function(req,res,games,cmd){
 			return [
 				{"id":1,"question":"Quel est le chiffre blah ..?", "response":["42"]},
 				{"id":2,"question":"Mon auteur est ?", "response":["edouard"]},
-				{"id":1,"question":"Quel est la valeur max d'un integer (32 bit)?", "response":['4294967295','4 294 967 295']},
+				{"id":3,"question":"Quel est la valeur max d'un integer (32 bit)?", "response":['4294967295','4 294 967 295']},
 
 			];
 		},
