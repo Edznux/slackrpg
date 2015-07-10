@@ -1,18 +1,18 @@
 var bot = require("../lib/bot");
+
+module.exports = function(message,games,cmd){
+	games.rnd = function(){};
+	
 var gameName = "Le jeux du Random",
 	name = "rnd",
 	file = "rnd.js";
-
-module.exports = function(message,games,cmd){
 	
-	games.rnd = function(){};
 	if(!message){
 		//just pushing to global games list
 		games.list.push({"gameName":gameName,"name":name,"file":file});
 	}
 
 	games.rnd = {
-
 		getName : function (){
 			return "Jeux du Random";
 		},
@@ -24,26 +24,26 @@ module.exports = function(message,games,cmd){
 			//delete "game rnd"
 			var cmd = message.text.substr(4);
 
-			var arg1 = cmd.split(' ')[1];
-			var arg2 = cmd.split(' ')[2];
-			var arg3 = cmd.split(' ')[3];
-			var arg4 = cmd.split(' ')[4];
-			console.log(cmd);
-			console.log("rnd arg1",arg1);
-			console.log("rnd arg2",arg2);
-			console.log("rnd arg3",arg3);
-			console.log("rnd arg4",arg4);
 
-			switch(arg2){
+			args = cmd.split(/ +/);
+
+			console.log(cmd);
+			console.log("rnd arg0",args[0]);
+			console.log("rnd arg1",args[1]);
+			console.log("rnd arg2",args[2]);
+			console.log("rnd arg3",args[3]);
+			console.log("rnd arg4",args[4]);
+
+			switch(arg[3]){
 				case "join":
 					joinGame(message,bot.getUserName(message));
 				break;
 
 				case "create":
 					console.log('rpg game rnd create');
-					if(arg3){
+					if(arg[4]){
 						console.log('CREATE THE GAME');
-						createGame(message,bot.getUserName(message),arg3);
+						createGame(message,arg[4]);
 					}else{
 						this.getHelp(message);
 					}
@@ -92,25 +92,25 @@ module.exports = function(message,games,cmd){
 						"rpg game "+ name + " join : Rejoindre la partie en cours.",
 						"rpg game "+ name + " gen : Effectuer son propre tirage.",
 						"rpg game "+ name + " quit : Quitter la partie en cours.",
-						].join('\n'); 
+						].join('\n');
 
 			bot.sendMsg(help,message.channel);
 		}
-	}
+	};
 	return games;
-}
+};
 
 
 function joinGame(message,user_name){
 	bot.sendMsg(user_name + " join the game",message.channel);
 }
 
-function createGame(message,user_name,gold){
-	bot.sendMsg("["+gameName.toUpperCase()+"] "+user_name + " create the game. Starting with " + gold +" gold ",message.channel);
+function createGame(message,gold){
+	bot.sendMsg("["+gameName.toUpperCase()+"] "+bot.getUserName(message) + " create the game. Starting with " + gold +" gold ",message.channel);
 }
 
-function initTimer(message,duration,callback){
-	var duration = duration || 30;
+function initTimer(message,d,callback){
+	var duration = d|| 30;
 
 	setInterval(function(){
 		duration--;
@@ -118,5 +118,5 @@ function initTimer(message,duration,callback){
 			callback();
 			// res.status(200).json({"text":"No time left!"});
 		}
-	},1000)
+	},1000);
 }

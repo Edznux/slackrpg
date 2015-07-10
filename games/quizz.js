@@ -1,14 +1,14 @@
 var bot = require("../lib/bot");
 
+module.exports = function(message,games,cmd){
+
 var gameName = "Quizz",
 	name = "quizz",
 	file = "quizz.js",
 
-	currentQuestion = -1,
-	nbTry = 0,
-	nbTryMax = 10;
-
-module.exports = function(message,games,cmd){
+	currentQuestion = -1,	// set curent question id  
+	nbTry = 0,				// current try number
+	nbTryMax = 10;			// maximum try, if exceeded, reset question.
 	
 	games.quizz = function(){};
 	if(!message){
@@ -38,12 +38,14 @@ module.exports = function(message,games,cmd){
 				case "create":
 					console.log('rpg game quizz create');
 					console.log(currentQuestion);
+					/*
+					* Check if one question is currently set
+					*/
 					if(currentQuestion == -1){
 						q = this.getRnd(message);
 						currentQuestion = q.id;
 						console.log('nouvelle question =',q.question);
 						bot.sendMsg(q.question,message.channel);
-						// res.status(200).json({'text':q.question});
 					}else{
 						bot.sendMsg("Une question est déjà en cours ("+nbTry+"essai(s) / "+nbTryMax+")",message.channel);
 					}
