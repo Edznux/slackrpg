@@ -1,19 +1,29 @@
-var db = require('./lib/db');
+/*var db = require('./lib/db');
 var router = require('./lib/router');
 var bot = require('./lib/bot');
 db.connect();
 
-bot.loadGames();
 
-module.exports = function (req, res, next) {
+module.exports = function (message,slack) {
+	// bot.sendMsg("test",message.channel);
 
-	var userName = bot.getUser(req);
-	console.log('userName : ',userName);
-	
+	var type = message.type,
+	channel = slack.getChannelGroupOrDMByID(message.channel),
+	user = slack.getUserByID(message.user),
+	time = message.ts,
+	text = message.text,
+	response = '';
 
+	console.log('Received: %s %s @%s %s "%s"', type, (channel.is_channel ? '#' : '') + channel.name, user.name, time, text);
+
+	var userName = user.name;
+	console.log(channel.name);
+	// no loop x)
+	if(userName != slack.self.name){
+		bot.sendMsg("test message",channel.name);
+	}
 	if(!userName){
-		console.log('no user name');
-		res.status(200).json({text:"No nickname"});
+		channel.send('no user name');
 	}
 
 	db.getUserByName(userName,function(exist){
@@ -25,6 +35,6 @@ module.exports = function (req, res, next) {
 			});
 		}
 
-		router(req,res);
-	})
-}
+		router(message);
+	});
+};*/
