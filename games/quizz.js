@@ -11,31 +11,30 @@ var gameName = "Quizz",
 module.exports = function(message,games,cmd){
 	
 	games.quizz = function(){};
-
-	if(!req && !res){
-		console.log('req and res == null => loadGame function called');
+	if(!message){
+		//just pushing to global games list
 		games.list.push({"gameName":gameName,"name":name,"file":file});
 	}
 
 	games.quizz = {
 		router:function(message){
-			var cmd = message.text.substr(4);
+			var cmd = message.text;
+			console.log(message.text);
+			console.log(cmd);
 			console.log("nbTry =",nbTry,"nbTryMax",nbTryMax,"currentQuestion",currentQuestion);
 
-			var arg1 = cmd.split(' ')[1];
-			var arg2 = cmd.split(' ')[2];
-			var arg3 = cmd.split(' ')[3];
-			var arg4 = cmd.split(' ')[4];
+			args = cmd.split(/ +/);
 
-			var userRes = message.text.substr(19).toLowerCase().trim();
-			
 			console.log(cmd);
-			console.log("quizz arg1",arg1);
-			console.log("quizz arg2",arg2);
-			console.log("quizz arg3",arg3);
-			console.log("quizz arg4",arg4);
-
-			switch(arg2){
+			console.log("user response =",userRes);
+			console.log("quizz arg0",args[0]);
+			console.log("quizz arg1",args[1]);
+			console.log("quizz arg2",args[2]);
+			console.log("quizz arg3",args[3]);
+			console.log("quizz arg4",args[4]);
+			
+			//rpg game quizz [res/create/help]
+			switch(args[3]){
 				case "create":
 					console.log('rpg game quizz create');
 					console.log(currentQuestion);
@@ -51,14 +50,23 @@ module.exports = function(message,games,cmd){
 				break;
 				
 				case "res":
-					console.log("currentQuestion res",currentQuestion);
-					console.log(this);
-					console.log("getRes(",this.getRes(currentQuestion),") res ",this.getRes(currentQuestion));
-					
+					var startRes = 0;
+					for (var i=0;i<4;i++){
+						startRes+= args[i].length;
+					}
+					startRes+=3; // add whitespace count after each word count
+					console.log(startRes);
+
+					var userRes = message.text.substr(startRes).toLowerCase().trim();
+			
+					console.log("userRes =",userRes);
+
 					nbTry++;
 					if(nbTry == nbTryMax){
 						nbTry = 0;
+						bot.sendMsg("Trop de tentative ratée, la réponse etait : "+ this.getRes(currentQuestion)[0], message.channel);
 						currentQuestion = -1;
+						return;
 					}
 
 					if(currentQuestion == -1){
@@ -66,6 +74,8 @@ module.exports = function(message,games,cmd){
 					}else{
 						if(this.getRes(currentQuestion).indexOf(userRes) >= 0){
 							bot.sendMsg("GGWP bonne réponse ! "+bot.getUserName(message), message.channel);
+							currentQuestion	= -1;
+							nbTry=0;
 						}else{
 							bot.sendMsg("Mauvais réponse "+bot.getUserName(message), message.channel);
 						}
@@ -99,8 +109,8 @@ module.exports = function(message,games,cmd){
 			currentQuestion = questionNo;
 			return this.getQuizz()[questionNo];
 		},
-		getRes:function(questionNo){
-			return this.getQuizz()[questionNo].response;
+		getRes:function(questionId){
+			return this.getQuizz()[questionId-1].response;
 		},
 		getRules: function(message){
 			var rules = [

@@ -6,9 +6,8 @@ var gameName = "Le jeux du Random",
 module.exports = function(message,games,cmd){
 	
 	games.rnd = function(){};
-	
-	if(!req && !res){
-		console.log('req and res == null => loadGame function called');
+	if(!message){
+		//just pushing to global games list
 		games.list.push({"gameName":gameName,"name":name,"file":file});
 	}
 
