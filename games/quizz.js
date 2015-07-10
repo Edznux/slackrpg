@@ -1,4 +1,5 @@
 var bot = require("../lib/bot");
+
 var gameName = "Quizz",
 	name = "quizz",
 	file = "quizz.js",
@@ -7,7 +8,7 @@ var gameName = "Quizz",
 	nbTry = 0,
 	nbTryMax = 10;
 
-module.exports = function(req,res,games,cmd){
+module.exports = function(message,games,cmd){
 	
 	games.quizz = function(){};
 
@@ -17,8 +18,8 @@ module.exports = function(req,res,games,cmd){
 	}
 
 	games.quizz = {
-		router:function(req,res){
-			var cmd = req.body.text.substr(4);
+		router:function(message){
+			var cmd = message.text.substr(4);
 			console.log("nbTry =",nbTry,"nbTryMax",nbTryMax,"currentQuestion",currentQuestion);
 
 			var arg1 = cmd.split(' ')[1];
@@ -26,7 +27,7 @@ module.exports = function(req,res,games,cmd){
 			var arg3 = cmd.split(' ')[3];
 			var arg4 = cmd.split(' ')[4];
 
-			var userRes = req.body.text.substr(19).toLowerCase().trim();
+			var userRes = message.text.substr(19).toLowerCase().trim();
 			
 			console.log(cmd);
 			console.log("quizz arg1",arg1);
@@ -39,12 +40,13 @@ module.exports = function(req,res,games,cmd){
 					console.log('rpg game quizz create');
 					console.log(currentQuestion);
 					if(currentQuestion == -1){
-						q = this.getRnd(req,res);
+						q = this.getRnd(message);
 						currentQuestion = q.id;
 						console.log('nouvelle question =',q.question);
-						res.status(200).json({'text':q.question});
+						bot.sendMsg(q.question,message.channel);
+						// res.status(200).json({'text':q.question});
 					}else{
-						res.status(200).json({"text":"Une question est deja en cours ("+nbTry+"essais / "+nbTryMax+")"});
+						bot.sendMsg("Une question est déjà en cours ("+nbTry+"essai(s) / "+nbTryMax+")",message.channel);
 					}
 				break;
 				
@@ -60,39 +62,38 @@ module.exports = function(req,res,games,cmd){
 					}
 
 					if(currentQuestion == -1){
-						res.status(200).json({"text":"Il n'y a pas de question en cours"});
+						bot.sendMsg("Il n'y a pas de question en cours",message.channel);
 					}else{
 						if(this.getRes(currentQuestion).indexOf(userRes) >= 0){
-							res.status(200).json({text:"GGWP bonne reponse "+bot.getUser(req)});
+							bot.sendMsg("GGWP bonne réponse ! "+bot.getUserName(message), message.channel);
 						}else{
-							res.status(200).json({text:"Mauvais réponse "+bot.getUser(req)});
+							bot.sendMsg("Mauvais réponse "+bot.getUserName(message), message.channel);
 						}
 					}
 				break;
 
 				case "help":
-					this.getHelp(req,res);
+					this.getHelp(message);
 				break;
 				
 				case "rules":
-					this.getRules(req,res);
+					this.getRules(message);
 				break;
 
 				default:
-					this.getHelp(req,res);
+					this.getHelp(message);
 					console.log("default quizz route");
 				break;
 			}
 		},
-		getQuizz: function(req,res){
+		getQuizz: function(message){
 			return [
-				{"id":1,"question":"Quel est le chiffre blah ..?", "response":["42"]},
-				{"id":2,"question":"Mon auteur est ?", "response":["edouard"]},
-				{"id":3,"question":"Quel est la valeur max d'un integer (32 bit)?", "response":['4294967295','4 294 967 295']},
-
+				{"id":1,"question":"Quel est la réponse à La grande question sur la vie, l'univers et le reste ?", "response":["42"]},
+				{"id":2,"question":"Qui est l'auteur de ce bot ?", "response":["édouard","edouard"]},
+				{"id":3,"question":"Quel est la valeur max d'un integer (32 bit) ?", "response":['4294967295','4 294 967 295']},
 			];
 		},
-		getRnd : function(req,res){
+		getRnd : function(message){
 			var nbq = this.getQuizz().length;
 			var questionNo = Math.floor(Math.random()*nbq);
 			currentQuestion = questionNo;
@@ -101,23 +102,23 @@ module.exports = function(req,res,games,cmd){
 		getRes:function(questionNo){
 			return this.getQuizz()[questionNo].response;
 		},
-		getRules: function(req,res){
+		getRules: function(message){
 			var rules = [
-					"Règles du jeux",
-					"Une fois le quizz lancer avec [rpg game quizz create]",
-					"les participant reponde dans le chat sous la forme [rpg game quizz res <réponse a la question>]",
-					"Le premier partipant ayant la bonne réponse remporte la partie",
+					"Règles du jeu",
+					"Une fois le quizz lancé avec [rpg game quizz create],",
+					"les participants répondent dans le chat sous la forme [rpg game quizz res <réponse à la question>].",
+					"Le premier partipant ayant la bonne réponse remporte la partie.",
 				].join('\n');
-			res.status(200).json({"text":rules});
+			bot.sendMsg(rules, message.channel);
 		},
-		getHelp : function(req,res){
+		getHelp : function(message){
 			var help = [
 					"Bienvenue dans " + gameName,
 					"rpg game "+ name + " create : Nouvelle question",
-					"rpg game "+ name + " res : Repondre a la question en cours",
+					"rpg game "+ name + " res : Répondre à la question en cours",
 				].join('\n'); 
-			res.status(200).json({"text":help});
+			bot.sendMsg(help, message.channel);
 		}
-	}
+	};
 	return games;
 }

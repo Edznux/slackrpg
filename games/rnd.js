@@ -3,7 +3,7 @@ var gameName = "Le jeux du Random",
 	name = "rnd",
 	file = "rnd.js";
 
-module.exports = function(req,res,games,cmd){
+module.exports = function(message,games,cmd){
 	
 	games.rnd = function(){};
 	
@@ -17,15 +17,13 @@ module.exports = function(req,res,games,cmd){
 		getName : function (){
 			return "Jeux du Random";
 		},
-		getRnd : function(req,res){
-			res.status(200).json({
-				"text" : bot.getUser(req)+" à tiré : "+ Math.floor( Math.random()*100 +1)
-			});
+		getRnd : function(message){
+			bot.sendMsg(bot.getUserName(message)+" à tiré : "+ Math.floor( Math.random()*100 +1), message.channel);
 		},
-		router : function(req,res){
+		router : function(message){
 			//rpg game rnd join
 			//delete "game rnd"
-			var cmd = req.body.text.substr(4);
+			var cmd = message.text.substr(4);
 
 			var arg1 = cmd.split(' ')[1];
 			var arg2 = cmd.split(' ')[2];
@@ -39,81 +37,80 @@ module.exports = function(req,res,games,cmd){
 
 			switch(arg2){
 				case "join":
-					joinGame(req,res,bot.getUser(req));
+					joinGame(message,bot.getUserName(message));
 				break;
 
 				case "create":
 					console.log('rpg game rnd create');
 					if(arg3){
 						console.log('CREATE THE GAME');
-						createGame(req,res,bot.getUser(req),arg3);
+						createGame(message,bot.getUserName(message),arg3);
 					}else{
-						this.getHelp(req,res);
+						this.getHelp(message);
 					}
 				break;
 
 				case "gen":
-					this.getRnd(req,res);
+					this.getRnd(message);
 				break;
 
 				case "help":
-					this.getHelp(req,res);
+					this.getHelp(message);
 				break;
 				case "rules":
-					this.getRules(req,res);
+					this.getRules(message);
 				break;
 				case "":
-					this.getHelp(req,res);
+					this.getHelp(message);
 				break;
 				default:
-					this.getHelp(req,res);
+					this.getHelp(message);
 					console.log("default quizz route");
 				break;
 			}
 		},
-		getRules: function(req,res){
-				var rules = [
-						"Règles du jeux",
-						"Après avoir rejoind une partie [rpg game rnd join] et avant l'ecoulement du timer,",
-						"chaque participant doit tirer un nombre aléatoire compris entre 0 et 100 [tpg game rnd gen]",
-						"La personne ayant le plus petit nombre donne la mise a celui qui a le plus grand nombre.",
-						"Les autres personne du groupes ne sont donc pas concernée.",
-						"Certain de ces nombre ont neanmoins des propriété particuliere que voici :",
-						"1 : le propriétaire donne la mise a TOUS les participants",
-						"2 : Le tireur donne 1/100 de la mise a tout les participants",
-						"13 : Chiffre le plus petit, remplace la personne ayant le plus petit nombre, les tours suivant doivent etre misé double",
-						"99 : Tous les joueurs donne 1/100eme de la mise au tireur, les autres chiffre (autre que 1 et 100) sont annulé ",
-						"100 : TOUS les participants donne la mise au propriétaire",
-						"Egalité entre 2 membres : double la mise et re-tirage"
-					].join('\n');
-			res.status(200).json({"text":rules});
+		getRules: function(message){
+			var rules = [
+					"Règles du jeu",
+					"Après avoir rejoint une partie [rpg game rnd join] et avant l'écoulement du timer,",
+					"chaque participant doit tirer un nombre aléatoire compris entre 0 et 100 [tpg game rnd gen]",
+					"La personne ayant le plus petit nombre donne la mise a celui qui a le plus grand nombre.",
+					"Les autres personne du groupe ne sont donc pas concernées.",
+					"Certains de ces nombres ont des propriétés particulières que voici :",
+					"1 : le propriétaire donne la mise à TOUT les participants.",
+					"2 : Le tireur donne 1/100ème de la mise à tout les participants.",
+					"13 : Chiffre le plus petit, remplace la personne ayant le plus petit nombre, les tours suivants doivent être misés double.",
+					"99 : Tous les joueurs donnent 1/100ème de la mise au tireur, les autres chiffres (autre que 1 et 100) sont annulés.",
+					"100 : TOUT les participants donnent la mise au propriétaire.",
+					"Égalité entre 2 membres : double la mise et re-tirage."
+				].join('\n');
+			bot.sendMsg(rules,message.channel);
 		},
-		getHelp : function(req,res){
+		getHelp : function(message){
 			var help = [
 						"Bienvenue dans " + gameName,
-						"rpg game "+ name + " create <gold>: Crée une nouvelle partie avec <gold> au depart",
-						"rpg game "+ name + " join : Rejoindre la partie en cours",
-						"rpg game "+ name + " gen : Generate",
-						"rpg game "+ name + " quit : Quitter la partie en cours",
-
+						"rpg game "+ name + " create <gold>: Crée une nouvelle partie avec <gold> au départ.",
+						"rpg game "+ name + " join : Rejoindre la partie en cours.",
+						"rpg game "+ name + " gen : Effectuer son propre tirage.",
+						"rpg game "+ name + " quit : Quitter la partie en cours.",
 						].join('\n'); 
 
-			res.status(200).json({"text":help});
+			bot.sendMsg(help,message.channel);
 		}
 	}
 	return games;
 }
 
 
-function joinGame(req,res,user_name){
-	res.status(200).json({'text':user_name + " join the game"});
+function joinGame(message,user_name){
+	bot.sendMsg(user_name + " join the game",message.channel);
 }
 
-function createGame(req,res,user_name,gold){
-	res.status(200).json({"text":"["+gameName.toUpperCase()+"] "+user_name + " create the game. Starting with " + gold +" gold "})
+function createGame(message,user_name,gold){
+	bot.sendMsg("["+gameName.toUpperCase()+"] "+user_name + " create the game. Starting with " + gold +" gold ",message.channel);
 }
 
-function initTimer(req,res,duration,callback){
+function initTimer(message,duration,callback){
 	var duration = duration || 30;
 
 	setInterval(function(){
