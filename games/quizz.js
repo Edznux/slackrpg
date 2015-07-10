@@ -131,4 +131,4 @@ module.exports = function(message,games,cmd){
 		}
 	};
 	return games;
-}
+};
