@@ -54,8 +54,6 @@ slack.on('open', function() {
 
 slack.on('message', function(message) {
 
-	console.log(message)
-	console.log(message.type);
 	if (message.type === 'message') {
 		var type = message.type,
 		channel = slack.getChannelGroupOrDMByID(message.channel),
