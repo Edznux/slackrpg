@@ -4,6 +4,7 @@ var rpgbot = require('./rpgbot');
 var bot = require('./lib/bot');
 var db = require('./lib/db');
 var router = require('./lib/router.js');
+var twitch = require('./lib/twitch.js');
 db.connect();
 
 var slack = bot.getSlack();
@@ -67,6 +68,9 @@ slack.on('message', function(message) {
 
 		if(message.text.split(" ")[0] == "rpg"){
 			router(message);
+		}
+		if(message.text.split(" ")[0] == "twitch"){
+			twitch(message);
 		}
 	}
 });
