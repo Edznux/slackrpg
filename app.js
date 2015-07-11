@@ -26,6 +26,18 @@ slack.on('open', function() {
 			groups.push(slack.groups[key].name);
 		}
 	}
+	/*
+	* Register all user in db
+	*/
+
+	for(key in channels){
+		channel = slack.getChannelByName(channels[key]);
+		for(user in channel.members){
+			user_id = channel.members[user];
+			bot.addUser(user_id, slack.team.id, 1, 1000, 0);
+		}
+	}
+
 
 	console.log('Welcome to Slack. You are @%s of %s', slack.self.name, slack.team.name);
 	console.log('You are in: %s', channels.join(', '));
@@ -48,29 +60,14 @@ slack.on('message', function(message) {
 		text = message.text,
 		response = '';
 
-		var userName = "edznux";
-
-		if(!userName){
-			channel.send('no user name');
+		if(!user){
+			console.log("not an user");
+			return;
 		}
-		// console.log('Received: %s %s @%s %s "%s"', type, (channel.is_channel ? '#' : '') + channel.name, user.name, time, text);
 
-		db.getUserByName(userName,function(exist){
-
-			if(!exist){
-				db.createUser(userName,slack.getChannelById(message.channel).name,bot.getTeamId(req),"citizen",1000,function(result){
-					console.log('Create user :');
-					console.log(result);
-				});
-			}
-
-			if(message.text.split(" ")[0] == "rpg"){
-				router(message);
-			}else{
-				console.log('not and rpg msg');
-			}
-
-		});
+		if(message.text.split(" ")[0] == "rpg"){
+			router(message);
+		}
 	}
 });
 
