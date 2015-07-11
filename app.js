@@ -5,6 +5,7 @@ var bot = require('./lib/bot');
 var db = require('./lib/db');
 var router = require('./lib/router.js');
 var twitch = require('./lib/twitch.js');
+var isup = require('./lib/isup.js');
 db.connect();
 
 var slack = bot.getSlack();
@@ -53,6 +54,8 @@ slack.on('open', function() {
 
 slack.on('message', function(message) {
 
+	console.log(message)
+	console.log(message.type);
 	if (message.type === 'message') {
 		var type = message.type,
 		channel = slack.getChannelGroupOrDMByID(message.channel),
@@ -72,7 +75,21 @@ slack.on('message', function(message) {
 		if(message.text.split(" ")[0] == "twitch"){
 			twitch(message);
 		}
+		if(message.text.split(" ")[0] == "isup"){
+			isup(message);
+		}
 	}
+});
+
+slack.on('presenceChange',function(user){
+	if(user.name !== "slackrpg"){
+		if(user.presence == "away"){
+			slack.getChannelByName("general").send("Re "+user.name+" !");
+		}
+	}else{
+		console.log('bot reconnected');
+	}
+	console.log("MANUAL PRESENCE CHANGE");
 });
 
 slack.on('error', function(error) {
