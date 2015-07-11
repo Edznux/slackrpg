@@ -82,7 +82,14 @@ slack.on('message', function(message) {
 slack.on('presenceChange',function(user){
 	if(user.name !== "slackrpg"){
 		if(user.presence == "away"){
-			slack.getChannelByName("general").send("Re "+user.name+" !");
+			bot.getUserFromDBById(user.id,function(result){
+				console.log("getUserFromDBById : ",result[0].updated_at);
+				// 1800000ms == 30 min
+				if(Date.now()-1800000 >result[0].updated_at){
+					slack.getChannelByName("general").send("Re "+user.name+" !");
+					bot.touchUser(user.id);
+				}
+			});
 		}
 	}else{
 		console.log('bot reconnected');
