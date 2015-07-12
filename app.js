@@ -94,7 +94,7 @@ slack.on('presenceChange',function(user){
 				console.log("message il y'a moins de 24 h");
 				// 1800000ms == 30 min
 					if(Date.now()-1800000 >result[0].updated_at){
-						slack.getChannelByName("bots").send("Re "+user.name+" !");
+						// slack.getChannelByName("bots").send("Re "+user.name+" !");
 						bot.touchUser(user.id,false);
 					}
 				}
