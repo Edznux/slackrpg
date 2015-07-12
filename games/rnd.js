@@ -1,11 +1,13 @@
 var bot = require("../lib/bot");
+var gameName = "Le jeux du Random",
+	name = "rnd",
+	file = "rnd.js",
+	members = [],
+	duration = 0,
+	game_gold = 0;
 
 module.exports = function(message,games,cmd){
 	games.rnd = function(){};
-	
-var gameName = "Le jeux du Random",
-	name = "rnd",
-	file = "rnd.js";
 	
 	if(!message){
 		//just pushing to global games list
@@ -16,41 +18,31 @@ var gameName = "Le jeux du Random",
 		getName : function (){
 			return "Jeux du Random";
 		},
-		getRnd : function(message){
-			bot.sendMsg(bot.getUserName(message)+" à tiré : "+ Math.floor( Math.random()*100 +1), message.channel);
+
+		getRnd : function(){
+			return Math.floor( Math.random()*100 +1);
 		},
+
 		router : function(message){
 			//rpg game rnd join
 			//delete "game rnd"
-			var cmd = message.text.substr(4);
-
-
+			var cmd = message.text;
 			args = cmd.split(/ +/);
-
 			console.log(cmd);
-			console.log("rnd arg0",args[0]);
-			console.log("rnd arg1",args[1]);
-			console.log("rnd arg2",args[2]);
-			console.log("rnd arg3",args[3]);
-			console.log("rnd arg4",args[4]);
 
-			switch(arg[3]){
+			switch(args[3]){
 				case "join":
-					joinGame(message,bot.getUserName(message));
+					this.joinGame(message,bot.getUserName(message));
 				break;
 
 				case "create":
 					console.log('rpg game rnd create');
-					if(arg[4]){
+					if(args[4]){
 						console.log('CREATE THE GAME');
-						createGame(message,arg[4]);
+						this.createGame(message,args[4]);
 					}else{
 						this.getHelp(message);
 					}
-				break;
-
-				case "gen":
-					this.getRnd(message);
 				break;
 
 				case "help":
@@ -68,6 +60,7 @@ var gameName = "Le jeux du Random",
 				break;
 			}
 		},
+
 		getRules: function(message){
 			var rules = [
 					"Règles du jeu",
@@ -83,8 +76,9 @@ var gameName = "Le jeux du Random",
 					"100 : TOUT les participants donnent la mise au propriétaire.",
 					"Égalité entre 2 membres : double la mise et re-tirage."
 				].join('\n');
-			bot.sendMsg(rules,message.channel);
+			bot.sendMsg(rules,message);
 		},
+
 		getHelp : function(message){
 			var help = [
 						"Bienvenue dans " + gameName,
@@ -94,29 +88,104 @@ var gameName = "Le jeux du Random",
 						"rpg game "+ name + " quit : Quitter la partie en cours.",
 						].join('\n');
 
-			bot.sendMsg(help,message.channel);
+			bot.sendMsg(help,message);
+		},
+
+		createGame: function(message,gold){
+			var _this = this,
+				d = 30,
+				game_gold = gold;
+			
+				duration = 30;
+
+			bot.sendMsg("["+gameName.toUpperCase()+"] "+bot.getUserName(message) + " create the game. Starting with " + gold +" gold ",message);
+			
+			this.joinGame(message, bot.getUserName(message));
+
+			this.initTimer(message, d, function(){
+				bot.sendMsg("Fin des inscriptions",message);
+				_this.winnerTimer(message, function(){
+					bot.sendMsg('Désigner le vainqueur et répartisser vous les gains',message);
+				});
+			});
+		},
+
+		joinGame: function(message,user_name){
+			console.log('join game at duration ==',duration);
+			if(duration > 0){
+				if(!this.getMemberByName(user_name)){
+					this.addMember(user_name);
+					roll = this.getMemberByName(user_name).roll;
+					bot.sendMsg(user_name + " à rejoint la partie et à tiré : "+ roll +"\n [rpg game rnd join] pour rejoindre la partie avec ", message);
+				}else{
+					bot.sendMsg("Vous avez déjà rejoint la partie",message);
+				}
+			}else{
+				bot.sendMsg("Vous ne pouvez pas rejoindre de partie",message);
+			}
+		},
+
+		initTimer: function(message,d,callback){
+			duration = d || 30;
+			var _this = this;
+			var timer = setInterval(function(){
+				duration--;
+				console.log(duration);
+				console.log(_this.getMembers());
+				if(duration == 10){
+					bot.sendMsg("Fin des inscriptions dans 10 secondes",message);
+				}
+
+				if(duration <= 0){
+					clearInterval(timer);
+					callback();
+				}
+
+			},1000);
+		},
+
+		winnerTimer: function(message,callback){
+			var dt = 10;
+			var timer = setInterval(function(){
+				dt--;
+				if(dt == 0){
+					clearInterval(timer);
+					callback();
+				}
+			},1000);
+		},
+
+		addMember: function(user_name){
+			member= {
+						user_name:user_name,
+						roll: this.getRnd()
+					};
+			if(!this.getMemberByName(user_name)){
+				console.log('pushed',member);
+				members.push(member);
+			}else{
+				console.log('User already in the members list');
+			}
+		},
+
+		getMembers: function(){
+			return members;
+		},
+
+		getMemberByName: function(user_name){
+			for(var name in members){
+				console.log("name = ",members[name]);
+				console.log("user_name = ",members[name].user_name);
+				if(members[name].user_name == user_name){
+					console.log("getMemberByName returned =",members[name]);
+					return members[name];
+				}else{
+					return false;
+				}
+			}
 		}
 	};
 	return games;
 };
 
 
-function joinGame(message,user_name){
-	bot.sendMsg(user_name + " join the game",message.channel);
-}
-
-function createGame(message,gold){
-	bot.sendMsg("["+gameName.toUpperCase()+"] "+bot.getUserName(message) + " create the game. Starting with " + gold +" gold ",message.channel);
-}
-
-function initTimer(message,d,callback){
-	var duration = d|| 30;
-
-	setInterval(function(){
-		duration--;
-		if(duration < 0){
-			callback();
-			// res.status(200).json({"text":"No time left!"});
-		}
-	},1000);
-}
