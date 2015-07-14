@@ -99,13 +99,17 @@ module.exports = function(message,games,cmd){
 				duration = 30;
 
 			bot.sendMsg("["+gameName.toUpperCase()+"] "+bot.getUserName(message) + " create the game. Starting with " + gold +" gold ",message);
+			if(this.getMembers().length > 0){
+				bot.sendMsg("Vous ne pouvez pas créer de partie car une partie est déja en cours",message);
+				return;
+			}
 			
 			this.joinGame(message, bot.getUserName(message));
-
 			this.initTimer(message, d, function(){
 				bot.sendMsg("Fin des inscriptions",message);
 				_this.winnerTimer(message, function(){
 					bot.sendMsg('Désigner le vainqueur et répartisser vous les gains',message);
+					_this.resetMembers();
 				});
 			});
 		},
@@ -116,7 +120,7 @@ module.exports = function(message,games,cmd){
 				if(!this.getMemberByName(user_name)){
 					this.addMember(user_name);
 					roll = this.getMemberByName(user_name).roll;
-					bot.sendMsg(user_name + " à rejoint la partie et à tiré : "+ roll +"\n [rpg game rnd join] pour rejoindre la partie avec ", message);
+					bot.sendMsg(user_name + " à rejoint la partie et à tiré : "+ roll +"\n [rpg game rnd join] pour rejoindre la partie, ("+duration+" secondes avant la fin des inscriptions)", message);
 				}else{
 					bot.sendMsg("Vous avez déjà rejoint la partie",message);
 				}
@@ -145,7 +149,7 @@ module.exports = function(message,games,cmd){
 		},
 
 		winnerTimer: function(message,callback){
-			var dt = 10;
+			var dt = 5;
 			var timer = setInterval(function(){
 				dt--;
 				if(dt == 0){
@@ -183,6 +187,9 @@ module.exports = function(message,games,cmd){
 					return false;
 				}
 			}
+		},
+		resetMembers : function(){
+			members = [];
 		}
 	};
 	return games;

@@ -1,3 +1,9 @@
+/*
+* Reset the database
+*/
+-- DROP TABLE players;
+-- DROP TABLE classes;
+-- DROP TABLE levels;
 
 CREATE TABLE IF NOT EXISTS `classes` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -11,7 +17,7 @@ CREATE TABLE IF NOT EXISTS `players` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `user_id` varchar(12) NOT NULL,
   `level` int unsigned DEFAULT 1,
-  `xp` int unsigned Default 0,
+  `xp` int unsigned NOT NULL Default 0,
   `gold` int(10) unsigned DEFAULT NULL,
   `class_id` int(10) unsigned NOT NULL DEFAULT '1',
   `created_at` bigint(20) DEFAULT NULL,
@@ -27,7 +33,9 @@ CREATE TABLE IF NOT EXISTS `players` (
 
 CREATE TABLE IF NOT EXISTS `levels` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `description` varchar(255) DEFAULT NULL,
   `name` varchar(20) NOT NULL,
+  `xp_needed` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 
@@ -39,7 +47,7 @@ ALTER TABLE `players`
 
 
 INSERT INTO `classes` (`id`, `class_name`, `description`) VALUES
-(1, 'Default', 'Default classes'),
+(1, 'Default', 'Default class'),
 (2, 'developer', 'Devs class'),
 (3, 'designer', 'Designer class, wow, such painting.');
 

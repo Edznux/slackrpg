@@ -61,22 +61,21 @@ slack.on('message', function(message) {
 		time = message.ts,
 		text = message.text,
 		response = '';
-		console.log(user);
-		//update timestamps
-		bot.touchUser(user.id,true);
 		
 		if(!user){
 			console.log("not an user");
 			return;
 		}
+		//update timestamps
+		bot.touchUser(user.id,true);
 
-		if(message.text.split(" ")[0] == "rpg"){
+		if(message.text.split(" ")[0].toLowerCase() == "rpg"){
 			router(message);
 		}
-		if(message.text.split(" ")[0] == "twitch"){
+		if(message.text.split(" ")[0].toLowerCase() == "twitch"){
 			twitch(message);
 		}
-		if(message.text.split(" ")[0] == "isup"){
+		if(message.text.split(" ")[0].toLowerCase() == "isup"){
 			isup(message);
 		}
 	}
@@ -86,12 +85,12 @@ slack.on('presenceChange',function(user){
 	if(user.name !== "slackrpg"){
 		if(user.presence == "away"){
 			bot.getUserFromDBById(user.id,function(result){
-				console.log("getUserFromDBById: ",result[0].user_id, "updated_at :",result[0].updated_at);
+				// console.log("getUserFromDBById: ",result[0].user_id, "updated_at :",result[0].updated_at);
 
 				//43200000ms == 12h
 				//86400000ms == 24h
 				if(Date.now()-86400000 > result[0].last_message_at){
-				console.log("message il y'a moins de 24 h");
+				// console.log("message il y'a moins de 24 h");
 				// 1800000ms == 30 min
 					if(Date.now()-1800000 >result[0].updated_at){
 						// slack.getChannelByName("bots").send("Re "+user.name+" !");
