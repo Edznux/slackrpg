@@ -1,5 +1,5 @@
+require('dotenv').load();
 var Slack = require('slack-client');
-var config = require('./config');
 var rpgbot = require('./rpgbot');
 var bot = require('./lib/bot');
 var db = require('./lib/db');

@@ -3,10 +3,29 @@
 
 SlackRPG is a Slack bot with an financial system, games etc...
 
+```
     git clone https://github.com/edznux/slackrpg.git
     cd slackrpg
     npm install
-    node app
+```
+Next, create a new user and a new database (if you use phpmyadmin, you can add one in the "privilege" tab).
+I recommand to create an user "rpgbot" with the same database name and a generated password.
+
+Then, create a ".env" file which contains : 
+
+```
+DB_HOST=localhost
+DB_USER=rpgbot
+DB_PASS=your_database_password
+BOT_TOKEN=xxxx-yourbottokenhereazbeceaerzaze-azeaez
+```
+
+Finally, launch the bot:
+
+```
+node app.js
+```
+
 
 ##Add Game##
 create one file in /games folder
