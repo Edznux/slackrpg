@@ -5,7 +5,9 @@
   "main": "app.js",
   "dependencies": {
     "body-parser": "^1.x.x",
-    "express": "^4.x.x",
+    "dotenv": "^1.2.0",
+    "ejs": "^2.3.4",
+    "express": "^4.13.3",
     "mysql": "~2.7.0",
     "slack-client": "^1.4.1"
   },

@@ -1,11 +1,14 @@
+require('dotenv').load();
 var Slack = require('slack-client');
-var config = require('./config');
 var rpgbot = require('./rpgbot');
 var bot = require('./lib/bot');
 var db = require('./lib/db');
 var router = require('./lib/router.js');
 var twitch = require('./lib/twitch.js');
 var isup = require('./lib/isup.js');
+
+var app = require('./www/main.js');
+
 db.connect();
 
 var slack = bot.getSlack();
@@ -45,6 +48,7 @@ slack.on('open', function() {
 	console.log('You are in: %s', channels.join(', '));
 	console.log('As well as: %s', groups.join(', '));
 	console.log('You have %s unread ' + (unreads === 1 ? 'message' : 'messages'), unreads);
+	
 	/*
 	* load games
 	*/
@@ -62,13 +66,14 @@ slack.on('message', function(message) {
 		text = message.text,
 		response = '';
 		console.log(user);
-		//update timestamps
-		bot.touchUser(user.id,true);
 		
 		if(!user){
 			console.log("not an user");
 			return;
 		}
+
+		//update timestamps
+		bot.touchUser(user.id,true);
 
 		if(message.text.split(" ")[0] == "rpg"){
 			router(message);
@@ -83,27 +88,29 @@ slack.on('message', function(message) {
 });
 
 slack.on('presenceChange',function(user){
-	if(user.name !== "slackrpg"){
-		if(user.presence == "away"){
-			bot.getUserFromDBById(user.id,function(result){
-				console.log("getUserFromDBById: ",result[0].user_id, "updated_at :",result[0].updated_at);
+	if(process.env.WELCOME_BACK_MESSAGE == "active"){
+		if(user.name !== "slackrpg"){
+			if(user.presence == "away"){
+				bot.getUserFromDBById(user.id,function(result){
+					console.log("getUserFromDBById: ",result[0].user_id, "updated_at :",result[0].updated_at);
 
-				//43200000ms == 12h
-				//86400000ms == 24h
-				if(Date.now()-86400000 > result[0].last_message_at){
-				console.log("message il y'a moins de 24 h");
-				// 1800000ms == 30 min
-					if(Date.now()-1800000 >result[0].updated_at){
-						slack.getChannelByName("bots").send("Re "+user.name+" !");
-						bot.touchUser(user.id,false);
+					//43200000ms == 12h
+					//86400000ms == 24h
+					if(Date.now()-86400000 > result[0].last_message_at){
+					console.log("message il y'a moins de 24 h");
+					// 1800000ms == 30 min
+						if(Date.now()-1800000 >result[0].updated_at){
+							slack.getChannelByName("bots").send("Re "+user.name+" !");
+							bot.touchUser(user.id,false);
+						}
 					}
-				}
-			});
+				});
+			}
+		}else{
+			console.log('bot reconnected');
 		}
-	}else{
-		console.log('bot reconnected');
+		console.log("MANUAL PRESENCE CHANGE");
 	}
-	console.log("MANUAL PRESENCE CHANGE");
 });
 
 slack.on('error', function(error) {
