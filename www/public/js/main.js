@@ -1,1 +1,1 @@
-alert('ok loaded');
+console.log("app loaded");

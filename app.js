@@ -4,9 +4,9 @@ var rpgbot = require('./rpgbot');
 var bot = require('./lib/bot');
 var db = require('./lib/db');
 var router = require('./lib/router.js');
-var twitch = require('./lib/twitch.js');
-var isup = require('./lib/isup.js');
+var commands = require('./lib/commands.js');
 
+//Start the web interface
 var app = require('./www/main.js');
 
 db.connect();
@@ -65,7 +65,6 @@ slack.on('message', function(message) {
 		time = message.ts,
 		text = message.text,
 		response = '';
-		console.log(user);
 		
 		if(!user){
 			console.log("not an user");
@@ -78,18 +77,14 @@ slack.on('message', function(message) {
 		if(message.text.split(" ")[0] == "rpg"){
 			router(message);
 		}
-		if(message.text.split(" ")[0] == "twitch"){
-			twitch(message);
-		}
-		if(message.text.split(" ")[0] == "isup"){
-			isup(message);
-		}
+		//load every new commands
+		commands.loader(message);
 	}
 });
 
 slack.on('presenceChange',function(user){
 	if(process.env.WELCOME_BACK_MESSAGE == "active"){
-		if(user.name !== "slackrpg"){
+		if(user.name !== slack.self.name){
 			if(user.presence == "away"){
 				bot.getUserFromDBById(user.id,function(result){
 					console.log("getUserFromDBById: ",result[0].user_id, "updated_at :",result[0].updated_at);
