@@ -1,0 +1,28 @@
+<%- include partials/header.ejs %>
+   <div id="accueil" class="row valign-wrapper" style="height:100vh;">
+    <div id="accueil-form" class="valign center col s10 m6 l2">
+      <form class="col s12" method="POST" action="/login">
+        <div class="row">
+          <div class="input-field col s12">
+            <input id="user" type="text" name="username" class="validate">
+            <label for="user">Username</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <input id="password" name="password" type="password" class="validate">
+            <label for="password">Mot de passe</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <button name="submit" type="submit" value="valider" class="btn waves-effect waves-light light-blue accent-3">Envoyer</button>
+            <br><br>
+          </div>
+        </div>
+      </form>
+      <div class="info-message"></div>
+    </div>
+  </div>
+
+<%- include partials/script.ejs %>

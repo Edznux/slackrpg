@@ -9,6 +9,9 @@
     "ejs": "^2.3.4",
     "express": "^4.13.3",
     "mysql": "~2.7.0",
+    "passport": "^0.3.0",
+    "passport-local": "^1.0.0",
+    "req-flash": "0.0.2",
     "slack-client": "^1.4.1"
   },
   "devDependencies": {},
