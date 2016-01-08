@@ -9,8 +9,6 @@ var commands = require('./lib/commands.js');
 //Start the web interface
 var app = require('./www/main.js');
 
-db.connect();
-
 var slack = bot.getSlack();
 
 slack.on('open', function() {
@@ -71,14 +69,14 @@ slack.on('message', function(message) {
 			return;
 		}
 
+		//load every new commands
+		commands.loader(message);
+
 		//update timestamps
 		bot.touchUser(user.id,true);
-
 		if(message.text.split(" ")[0] == "rpg"){
 			router(message);
 		}
-		//load every new commands
-		commands.loader(message);
 	}
 });
 
