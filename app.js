@@ -6,6 +6,7 @@ var db = require('./lib/db');
 var router = require('./lib/router.js');
 var commands = require('./lib/commands.js');
 
+
 //Start the web interface
 var app = require('./www/main.js');
 
